@@ -2,7 +2,7 @@ var fn = require('./functions.js');
 
 module.exports = {
 
-  VERSION: "V1.2.1",
+  VERSION: "V1.2.2",
 
   bet_request: function(game_state) {
     
@@ -64,28 +64,29 @@ module.exports = {
     console.log('confidence: '+confidence);
     console.log('was raised: '+raised);
     
+    var betAmount = 0;
+    
     
     if (pre_flop) {
       if (confidence == 100  && raised) {
-        return stack;
+        betAmount = stack;
       } else if (confidence == 100 || (confidence >= 50 && !raised)) {
-        return gs.minimum_raise*3;
+        betAmount = gs.minimum_raise*3;
       } else if (confidence >= 50){
-        return callAmount;
-      } else {
-        return 0;
+        betAmount = callAmount;
       }
     } else { // post flop
       var flopped_pair = fn.getPair(community_cards, hole_cards);
       var has_flopped_pair = flopped_pair.length >= 2;
       console.log('has flopped pair: '+has_flopped_pair);
       if ( (flopped_pair.length >= 2 && fn.getRank(flopped_pair[0]) > 9) || ( pair && rank[0] > 10 ) ) {
-        return stack;
-      } else {
-        return 0;
+        betAmount = stack;
       }
     }
     
+    console.log('betting: '+betAmount);
+    console.log('-------------');
+    return betAmount;
     
     
   },
