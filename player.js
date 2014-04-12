@@ -1,7 +1,7 @@
 
 module.exports = {
 
-  VERSION: "Default JavaScript folding player",
+  VERSION: "V1.0.1",
 
   bet_request: function(game_state) {
     var gs = JSON.parse(game_state);
