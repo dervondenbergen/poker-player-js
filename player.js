@@ -2,7 +2,7 @@ var fn = require('./functions.js');
 
 module.exports = {
 
-  VERSION: "V1.2.4",
+  VERSION: "V1.3.0",
 
   bet_request: function(game_state) {
     
@@ -15,6 +15,7 @@ module.exports = {
     var currentBet =0;
     var callAmount =0;
     var pair = false;
+    var suited = false;
     if (gs.community_cards.length === 0) {
       pre_flop = true;
     }
@@ -27,7 +28,9 @@ module.exports = {
         for (var j = 0; j < gs.players[i].hole_cards.length; j++) {
           hole_cards.push(gs.players[i].hole_cards[j].rank);
         }
-        
+        if ( gs.players[i].hole_cards[0].suit == gs.players[i].hole_cards[1].suit) {
+          suited = true;
+        }
         stack = gs.players[i].stack;
         currentBet = gs.players[i].bet;
         callAmount = gs.current_buy_in - currentBet; 
@@ -74,6 +77,8 @@ module.exports = {
     
     
     if (pre_flop) {
+      var SCRanking = fn.getSCRanking(hole_cards, suited);
+      
       if (confidence == 100  && raised) {
         betAmount = stack;
       } else if (confidence == 100 || (confidence >= 50 && !raised)) {
@@ -81,6 +86,16 @@ module.exports = {
       } else if (confidence >= 50){
         betAmount = callAmount;
       }
+      
+      var stackCompare = (stack / gs.small_blind) * 2;
+      
+      console.log('SCRanking: '+SCRanking);
+      console.log('stackCompare: '+stackCompare);
+      
+      if ( stackCompare < SCRanking ) {
+        betAmount = stack;
+      }
+      
     } else { // post flop
       var flopped_pair = fn.getPair(community_cards, hole_cards);
       var has_flopped_pair = flopped_pair.length >= 2;
