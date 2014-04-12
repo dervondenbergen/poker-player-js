@@ -2,7 +2,7 @@ var fn = require('./functions.js');
 
 module.exports = {
 
-  VERSION: "V1.2.2",
+  VERSION: "V1.2.3",
 
   bet_request: function(game_state) {
     
@@ -46,9 +46,15 @@ module.exports = {
 
     // switch
     if (rank[0] < rank[1]) {
+      
     	var temp = rank[0];
     	rank[0] = rank[1];
     	rank[1] = temp;
+      
+      var h_temp = hole_cards[0];
+      hole_cards[0] = hole_cards[1];
+      hole_cards[1] = h_temp;
+      
     } else if (rank[0] == rank[1]) {
     	pair = true;
     }
