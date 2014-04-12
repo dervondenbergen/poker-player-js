@@ -1,7 +1,7 @@
 
 module.exports = {
 
-  VERSION: "V1.1.0",
+  VERSION: "V1.1.1",
 
   bet_request: function(game_state) {
     
@@ -33,7 +33,7 @@ module.exports = {
     }
     
     console.log(ranks);
-    
+    //              0   1   2   3   4   5   6   7   8    9   10  11  12
     var ranking = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
     
     rank0 = 0;
@@ -41,35 +41,60 @@ module.exports = {
     var pair = false;
     for (var i =0; i< ranking.length; i++) {
     	if (ranks[0] == ranking[i]) {
-    		ranks0 = i;
+    		rank0 = i;
     	}
     	if (ranks[1] == ranking[i]) {
-    		ranks1 = i;
+    		rank1 = i;
     	}
     }
 
     // switch
     if (rank0 < rank1) {
-    	var temp = ranks[0];
-    	ranks[0] = ranks[1];
-    	ranks[1] = temp;
+    	var temp = rank0;
+    	rank0 = rank1;
+    	rank1 = temp;
     } else if (rank0 == rank1) {
     	pair = true;
     }
     
+    console.log(pair);
+    console.log(rank0);
+    console.log(rank1);
     
+    var confidence = 0;
     
-    if (pre_flop && ( pair || ranks[0] == 'A') ) {
-      return stack;
+    if (pre_flop) {
+      if ( pair ) {
+        if (rank0 > 8) {
+          confidence = 100;
+        } else if (rank0 > 6) {
+          confidence = 50;
+        }
+        
+        
+      } else  {// no pair
+        if (rank0 == 12) {
+          if (rank1 > 9) {
+            confidence = 100;
+          } else if (rank1 > 7) {
+            confidence = 50;
+          }
+        }
+      }
     }
     
-    if (gs.small_blind*3 == gs.pot) {
-      return gs.minimum_raise;
+    var raised = false;
+
+
+    if (gs.small_blind*3 < gs.pot) {
+      raised = true;
+    }
+    
+    if (confidence == 100 || (confidence >= 50 && !raised)) {
+      return stack;
     } else {
       return 0;
     }
-    
-    
     
   },
 
