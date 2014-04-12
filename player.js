@@ -8,7 +8,7 @@ module.exports = {
     
     var gs = JSON.parse(game_state);
     
-    if (gs.small_blind*3 <= gs.pot) {
+    if (gs.small_blind*3 == gs.pot) {
       return gs.minimum_raise;
     } else {
       return 0;
