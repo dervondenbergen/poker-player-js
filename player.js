@@ -1,100 +1,85 @@
+var fn = require('./functions.js');
 
 module.exports = {
 
-  VERSION: "V1.1.1",
+  VERSION: "V1.2.0",
 
   bet_request: function(game_state) {
     
     var gs = JSON.parse(game_state);
     
-    var hole_cards;
+    var hole_cards = [];
     var stack;
     var pre_flop = false;
-    
+    var community_cards = gs.community_cards; 
+    var currentBet =0;
+    var callAmount =0;
+    var pair = false;
     if (gs.community_cards.length === 0) {
       pre_flop = true;
     }
     
     console.log(pre_flop);
     
+    
     for (var i = 0; i < gs.players.length; i++) {
       if (gs.players[i].hole_cards !== undefined) {
-        hole_cards = gs.players[i].hole_cards;
+        for (var j = 0; j < gs.players[i].hole_cards.length; j++) {
+          hole_cards.push(gs.players[i].hole_cards[j].rank);
+        }
         stack = gs.players[i].stack;
+        currentBet = gs.players[i].bet;
+        callAmount = gs.current_buy_in - currentBet; 
       }
     }
     
     console.log(hole_cards);
+    var rank = [];
     
-    var ranks =  [];
-    
-    for (var j = 0; j < hole_cards.length; j++) {
-      ranks.push(hole_cards[j].rank);
-    }
-    
-    console.log(ranks);
-    //              0   1   2   3   4   5   6   7   8    9   10  11  12
-    var ranking = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
-    
-    rank0 = 0;
-    rank1 = 0;
-    var pair = false;
-    for (var i =0; i< ranking.length; i++) {
-    	if (ranks[0] == ranking[i]) {
-    		rank0 = i;
-    	}
-    	if (ranks[1] == ranking[i]) {
-    		rank1 = i;
-    	}
-    }
+    rank.push(fn.getRank(hole_cards[0]));
+    rank.push(fn.getRank(hole_cards[1]));
 
     // switch
-    if (rank0 < rank1) {
-    	var temp = rank0;
-    	rank0 = rank1;
-    	rank1 = temp;
-    } else if (rank0 == rank1) {
+    if (rank[0] < rank[1]) {
+    	var temp = rank[0];
+    	rank[0] = rank[1];
+    	rank[1] = temp;
+    } else if (rank[0] == rank[1]) {
     	pair = true;
     }
     
-    console.log(pair);
-    console.log(rank0);
-    console.log(rank1);
-    
-    var confidence = 0;
-    
-    if (pre_flop) {
-      if ( pair ) {
-        if (rank0 > 8) {
-          confidence = 100;
-        } else if (rank0 > 6) {
-          confidence = 50;
-        }
-        
-        
-      } else  {// no pair
-        if (rank0 == 12) {
-          if (rank1 > 9) {
-            confidence = 100;
-          } else if (rank1 > 7) {
-            confidence = 50;
-          }
-        }
-      }
-    }
+    var confidence = fn.confidence(pair, rank);
     
     var raised = false;
-
-
     if (gs.small_blind*3 < gs.pot) {
       raised = true;
     }
     
-    if (confidence == 100 || (confidence >= 50 && !raised)) {
-      return stack;
-    } else {
-      return 0;
+    console.log('pair: ' +pair);
+    console.log(confidence);
+    console.log(raised);
+    
+    
+    if (pre_flop) {
+      if (confidence == 100  && raised) {
+        return stack;
+      } else if (confidence == 100 || (confidence >= 50 && !raised)) {
+        return gs.minimum_raise*3;
+      } else if (confidence >= 50){
+        return callAmount;
+      } else {
+        return 0;
+      }
+    } else { // post flop
+      var flopped_pair = fn.getPair(community_cards, hole_cards);
+      if ( (flopped_pair.length >= 2 && fn.getRank(flopped_pair[0]) > 9) || ( pair && rank[0] > 10 ) ) {
+        return stack;
+      } else {
+        return 0;
+      }
     }
+    
+    
     
   },
 
