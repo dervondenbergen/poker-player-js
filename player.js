@@ -2,7 +2,7 @@ var fn = require('./functions.js');
 
 module.exports = {
 
-  VERSION: "V1.3.0",
+  VERSION: "V1.3.1",
 
   bet_request: function(game_state) {
     
@@ -93,6 +93,7 @@ module.exports = {
       console.log('stackCompare: '+stackCompare);
       
       if ( stackCompare < SCRanking ) {
+        console.log('SC all in');
         betAmount = stack;
       }
       
