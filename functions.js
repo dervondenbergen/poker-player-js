@@ -3,22 +3,30 @@ module.exports = {
   confidence: function (pair, rank) {
     
     if ( pair ) {
-      if (rank[0] > 8) {
+      if (rank[0] > 7) {
         return 100;
-      } else if (rank[0] > 6) {
+      } else if (rank[0] > 5) {
         return 50;
       }
       
       
     } else  {// no pair
       if (rank[0] == 12) {
-        if (rank[1] > 9) {
+        if (rank[1] > 8) {
           return 100;
+        } else if (rank[1] > 6) {
+          return 50;
+        }
+      } else if (rank[0] == 11) {
+        if (rank[1] > 9) {
+          return 75;
         } else if (rank[1] > 7) {
           return 50;
         }
       }
     }
+    
+    return 0;
     
   },
   

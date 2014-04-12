@@ -2,7 +2,7 @@ var fn = require('./functions.js');
 
 module.exports = {
 
-  VERSION: "V1.2.3",
+  VERSION: "V1.2.4",
 
   bet_request: function(game_state) {
     
@@ -85,7 +85,7 @@ module.exports = {
       var flopped_pair = fn.getPair(community_cards, hole_cards);
       var has_flopped_pair = flopped_pair.length >= 2;
       console.log('has flopped pair: '+has_flopped_pair);
-      if ( (flopped_pair.length >= 2 && fn.getRank(flopped_pair[0]) > 9) || ( pair && rank[0] > 10 ) ) {
+      if ( (flopped_pair.length >= 2 && fn.getRank(flopped_pair[0]) > 8) || ( pair && rank[0] > 9 ) ) {
         betAmount = stack;
       }
     }
