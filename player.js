@@ -2,7 +2,7 @@ var fn = require('./functions.js');
 
 module.exports = {
 
-  VERSION: "V1.2.0",
+  VERSION: "V1.2.1",
 
   bet_request: function(game_state) {
     
@@ -11,7 +11,7 @@ module.exports = {
     var hole_cards = [];
     var stack;
     var pre_flop = false;
-    var community_cards = gs.community_cards; 
+    var community_cards = []; 
     var currentBet =0;
     var callAmount =0;
     var pair = false;
@@ -19,7 +19,7 @@ module.exports = {
       pre_flop = true;
     }
     
-    console.log(pre_flop);
+    console.log('is pref lop: '+pre_flop);
     
     
     for (var i = 0; i < gs.players.length; i++) {
@@ -27,13 +27,18 @@ module.exports = {
         for (var j = 0; j < gs.players[i].hole_cards.length; j++) {
           hole_cards.push(gs.players[i].hole_cards[j].rank);
         }
+        
         stack = gs.players[i].stack;
         currentBet = gs.players[i].bet;
         callAmount = gs.current_buy_in - currentBet; 
       }
     }
     
-    console.log(hole_cards);
+    for (var i = 0; i < gs.community_cards.length; i++) {
+      community_cards.push(gs.community_cards[i].rank);
+    }
+    
+    console.log('hole cards: '+hole_cards);
     var rank = [];
     
     rank.push(fn.getRank(hole_cards[0]));
@@ -56,8 +61,8 @@ module.exports = {
     }
     
     console.log('pair: ' +pair);
-    console.log(confidence);
-    console.log(raised);
+    console.log('confidence: '+confidence);
+    console.log('was raised: '+raised);
     
     
     if (pre_flop) {
@@ -72,6 +77,8 @@ module.exports = {
       }
     } else { // post flop
       var flopped_pair = fn.getPair(community_cards, hole_cards);
+      var has_flopped_pair = flopped_pair.length >= 2;
+      console.log('has flopped pair: '+has_flopped_pair);
       if ( (flopped_pair.length >= 2 && fn.getRank(flopped_pair[0]) > 9) || ( pair && rank[0] > 10 ) ) {
         return stack;
       } else {

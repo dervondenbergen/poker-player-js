@@ -28,7 +28,8 @@ module.exports = {
     for (var hole = 0; hole<2; hole++ ) {
     	for (var com = 0; com < communityCards.length; com++) {
     		if (holeCards[hole].toString() == communityCards[com].toString()) {
-    			pair.push(holeCards[hole].toString());
+    			console.log('found pair');
+          pair.push(holeCards[hole].toString());
           pair.push(communityCards[com].toString());
           return pair;
     		}
